@@ -1,0 +1,1374 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="آزاد اندیشان - ایده های برتر">
+  <title>آزاد اندیشان | ایده های برتر</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+  /* ================= متغیرها ================= */
+  :root{
+    --bg:#04060e;
+    --neon1:#00e5ff;
+    --neon2:#22ff88;
+    --neon3:#a855f7;
+    --pink:#ff2fd0;
+    --panel:rgba(6,10,24,.62);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:'Vazirmatn', Tahoma, sans-serif;
+    background:radial-gradient(circle at 50% 0%, #12224a 0%, #060a18 45%, var(--bg) 100%);
+    color:#e9f6ff;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:-1;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 70% 15%, rgba(0,229,255,.7), transparent),
+      radial-gradient(1.5px 1.5px at 40% 80%, rgba(168,85,247,.7), transparent),
+      radial-gradient(1.5px 1.5px at 85% 65%, rgba(34,255,136,.6), transparent),
+      radial-gradient(1.5px 1.5px at 10% 70%, rgba(255,47,208,.5), transparent);
+    background-size:600px 600px, 800px 800px, 700px 700px, 900px 900px, 750px 750px;
+    animation:stars 90s linear infinite;
+    opacity:.7;
+  }
+
+  /* ================= نوار بالا ================= */
+  .topbar{
+    position:fixed; inset:0 0 auto 0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:10px 16px;
+    background:var(--panel);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(0,229,255,.25);
+    box-shadow:0 4px 30px rgba(0,229,255,.12);
+  }
+
+  /* منوی سه خط */
+  .menu-btn{
+    width:54px; height:46px; flex:0 0 auto;
+    border:1px solid rgba(0,229,255,.45);
+    border-radius:12px;
+    background:rgba(0,229,255,.06);
+    cursor:pointer;
+    display:flex; flex-direction:column; justify-content:center; gap:6px;
+    padding:0 12px;
+    transition:box-shadow .3s, transform .3s, background .3s;
+  }
+  .menu-btn span{
+    display:block; height:3px; border-radius:3px;
+    background:linear-gradient(90deg, var(--neon1), var(--neon3));
+    box-shadow:0 0 8px var(--neon1);
+    transition:transform .35s, opacity .3s;
+  }
+  .menu-btn:hover{box-shadow:0 0 18px rgba(0,229,255,.6); transform:scale(1.05); background:rgba(0,229,255,.12)}
+  .menu-btn:focus-visible{outline:2px solid var(--neon2); outline-offset:3px}
+  .menu-btn.open span:nth-child(1){transform:translateY(9px) rotate(45deg)}
+  .menu-btn.open span:nth-child(2){opacity:0; transform:scaleX(.2)}
+  .menu-btn.open span:nth-child(3){transform:translateY(-9px) rotate(-45deg)}
+
+  /* ساعت و تقویم سوییچ‌شونده */
+  .topbar-side{display:flex; align-items:center; gap:10px; margin-inline-start:auto}
+
+  .datetime{
+    position:relative;
+    width:min(330px, 58vw);
+    height:58px;
+    overflow:hidden;
+    text-align:left;
+    direction:rtl;
+  }
+  .dt-panel{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:center; gap:2px;
+    opacity:0; transform:translateY(10px) scale(.96);
+    transition:opacity .55s ease, transform .55s cubic-bezier(.6,.05,.2,1);
+    pointer-events:none;
+  }
+  .dt-panel.is-active{opacity:1; transform:translateY(0) scale(1)}
+  .dt-label{font-size:.66rem; color:#7fb6dd; letter-spacing:.5px}
+  .clock{
+    font-size:1.45rem; font-weight:900; letter-spacing:1px;
+    background:linear-gradient(90deg, var(--neon1), var(--neon2), var(--neon1));
+    background-size:200% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    color:transparent;
+    animation:lightRun 4s linear infinite;
+    filter:drop-shadow(0 0 8px rgba(0,229,255,.7));
+  }
+  .date{font-size:.74rem; color:#9fd8ff; opacity:.92; line-height:1.55}
+  .dt-dots{position:absolute; bottom:2px; right:0; display:flex; gap:5px}
+  .dt-dots i{width:6px; height:6px; border-radius:50%; background:rgba(0,229,255,.25); transition:.35s}
+  .dt-dots i.on{background:var(--neon1); box-shadow:0 0 10px var(--neon1); transform:scale(1.25)}
+
+  /* چیپ مدیر */
+  .admin-chip{
+    display:none; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px;
+    border:1px solid rgba(34,255,136,.45);
+    background:rgba(34,255,136,.08);
+    font-size:.7rem; color:#bff8d6; white-space:nowrap;
+  }
+  body.is-admin .admin-chip{display:flex}
+  .admin-chip .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--neon2); box-shadow:0 0 10px var(--neon2);
+    animation:pulseDot 1.6s ease-in-out infinite;
+  }
+  .admin-chip button{
+    background:rgba(255,47,208,.14); border:1px solid rgba(255,47,208,.45);
+    color:#ffd7f4; border-radius:999px; padding:4px 10px;
+    font-family:inherit; font-size:.68rem; cursor:pointer; transition:.25s;
+  }
+  .admin-chip button:hover{background:rgba(255,47,208,.3)}
+
+  /* ================= منوی کشویی ================= */
+  .drawer{
+    position:fixed; top:0; right:0; z-index:60;
+    width:290px; max-width:86vw; height:100vh;
+    display:flex; flex-direction:column;
+    background:linear-gradient(180deg, #0b1430, #060a18);
+    border-left:1px solid rgba(0,229,255,.3);
+    box-shadow:-10px 0 40px rgba(0,0,0,.65);
+    transform:translateX(100%);
+    transition:transform .4s cubic-bezier(.6,.05,.2,1);
+  }
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px; border-bottom:1px solid rgba(0,229,255,.2);
+    font-weight:700; color:var(--neon1);
+  }
+  .close-btn{background:none; border:0; color:#fff; font-size:1.9rem; cursor:pointer; line-height:1; transition:.25s}
+  .close-btn:hover{color:var(--pink); transform:rotate(90deg)}
+  .drawer ul{list-style:none; padding:10px; overflow-y:auto}
+  .drawer li a{
+    display:block; padding:14px 12px; border-radius:12px;
+    color:#dff2ff; text-decoration:none; font-weight:500;
+    transition:background .25s, color .25s, transform .25s, box-shadow .25s;
+  }
+  .drawer li a:hover, .drawer li a:focus-visible{
+    background:rgba(0,229,255,.1); color:#fff; transform:translateX(-6px);
+    box-shadow:inset -3px 0 0 var(--neon1), 0 0 18px rgba(0,229,255,.35);
+    outline:none;
+  }
+  .drawer-foot{
+    margin-top:auto; padding:14px 16px;
+    display:flex; align-items:center; gap:8px;
+    font-size:.7rem; color:#6d9bc0;
+    border-top:1px solid rgba(0,229,255,.15);
+  }
+  .drawer-foot .dot{width:7px; height:7px; border-radius:50%; background:var(--neon2); box-shadow:0 0 10px var(--neon2); animation:pulseDot 1.6s ease-in-out infinite}
+
+  .overlay{
+    position:fixed; inset:0; z-index:55;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(2px);
+    opacity:0; visibility:hidden; transition:opacity .35s, visibility .35s;
+  }
+  .overlay.show{opacity:1; visibility:visible}
+
+  /* ================= ویوها ================= */
+  .view{display:none}
+  .view.is-active{display:block}
+
+  /* ================= تابلو ================= */
+  .hero{
+    min-height:72vh;
+    display:grid; place-items:center;
+    padding:96px 16px 34px;
+  }
+  .tablo{
+    position:relative; overflow:hidden; text-align:center;
+    padding:50px 34px 42px; border-radius:26px;
+    border:1px solid rgba(0,229,255,.35);
+    background:radial-gradient(circle at 50% 20%, rgba(0,229,255,.10), rgba(10,16,38,.85));
+    box-shadow:0 0 30px rgba(0,229,255,.25), inset 0 0 60px rgba(168,85,247,.18);
+    animation:tabloGlow 3s ease-in-out infinite;
+  }
+  .sweep{
+    position:absolute; top:0; bottom:0; width:45%;
+    background:linear-gradient(100deg, transparent, rgba(255,255,255,.22), transparent);
+    transform:translateX(-150%) skewX(-15deg);
+    animation:sweepMove 4.5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  .sweep-2{width:22%; background:linear-gradient(100deg, transparent, rgba(0,229,255,.35), transparent); animation-delay:2.2s}
+  .corner{
+    position:absolute; width:26px; height:26px;
+    border:2px solid var(--neon1);
+    filter:drop-shadow(0 0 8px var(--neon1));
+    animation:cornerPulse 2.4s ease-in-out infinite;
+  }
+  .corner.tl{top:12px; left:12px; border-right:0; border-bottom:0; border-radius:10px 0 0 0}
+  .corner.tr{top:12px; right:12px; border-left:0; border-bottom:0; border-radius:0 10px 0 0}
+  .corner.bl{bottom:12px; left:12px; border-right:0; border-top:0; border-radius:0 0 0 10px}
+  .corner.br{bottom:12px; right:12px; border-left:0; border-top:0; border-radius:0 0 10px 0}
+  .neon-title{
+    font-size:clamp(2.2rem, 9vw, 5.6rem); font-weight:900; line-height:1.25;
+    background:linear-gradient(90deg, var(--neon1), var(--neon2), var(--pink), var(--neon3), var(--neon1));
+    background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:lightRun 6s linear infinite, glowPulse 2.4s ease-in-out infinite;
+  }
+  .neon-sub{
+    margin-top:10px; font-size:clamp(1rem, 4vw, 2rem); font-weight:700;
+    color:#cfe9ff; letter-spacing:2px;
+    text-shadow:0 0 10px var(--neon3), 0 0 28px var(--neon1);
+    animation:flicker 4s infinite;
+  }
+  .lights{display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:26px}
+  .lights span{
+    width:12px; height:12px; border-radius:50%;
+    background:var(--neon1); box-shadow:0 0 14px var(--neon1);
+    animation:dance 1.2s ease-in-out infinite;
+  }
+  .lights span:nth-child(2n){background:var(--neon2); box-shadow:0 0 14px var(--neon2)}
+  .lights span:nth-child(3n){background:var(--neon3); box-shadow:0 0 14px var(--neon3)}
+  .lights span:nth-child(4n){background:var(--pink);  box-shadow:0 0 14px var(--pink)}
+  .lights span:nth-child(1){animation-delay:0s}   .lights span:nth-child(2){animation-delay:.1s}
+  .lights span:nth-child(3){animation-delay:.2s}  .lights span:nth-child(4){animation-delay:.3s}
+  .lights span:nth-child(5){animation-delay:.4s}  .lights span:nth-child(6){animation-delay:.5s}
+  .lights span:nth-child(7){animation-delay:.6s}  .lights span:nth-child(8){animation-delay:.7s}
+  .lights span:nth-child(9){animation-delay:.8s}  .lights span:nth-child(10){animation-delay:.9s}
+  .lights span:nth-child(11){animation-delay:1s}  .lights span:nth-child(12){animation-delay:1.1s}
+
+  /* ================= فید صفحه اصلی ================= */
+  .feed-wrap{max-width:660px; margin:0 auto; padding:0 16px 90px}
+  .feed-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:6px 0 16px; padding-bottom:10px;
+    border-bottom:1px solid rgba(0,229,255,.18);
+  }
+  .feed-head h3{font-size:1.05rem; color:#dff2ff; font-weight:700}
+  .feed-head h3::before{content:"✦ "; color:var(--neon1)}
+  .feed-head span{font-size:.7rem; color:#7fb6dd}
+  .feed{display:flex; flex-direction:column; gap:18px}
+
+  .post{
+    border:1px solid rgba(0,229,255,.22);
+    border-radius:20px;
+    background:linear-gradient(180deg, rgba(12,20,44,.9), rgba(6,10,24,.9));
+    box-shadow:0 8px 30px rgba(0,0,0,.45), inset 0 0 40px rgba(168,85,247,.06);
+    overflow:hidden;
+    animation:postIn .45s cubic-bezier(.6,.05,.2,1);
+  }
+  .post-head{display:flex; align-items:center; gap:10px; padding:12px 14px}
+  .avatar{
+    width:40px; height:40px; border-radius:50%; flex:0 0 auto;
+    display:grid; place-items:center; font-weight:900; color:#04121a;
+    background:linear-gradient(135deg, var(--neon1), var(--neon2));
+    box-shadow:0 0 16px rgba(0,229,255,.55);
+  }
+  .who{display:flex; flex-direction:column; line-height:1.4}
+  .who b{font-size:.86rem}
+  .who small{font-size:.66rem; color:#7fb6dd}
+  .del{
+    display:none; margin-inline-start:auto;
+    width:36px; height:36px; border-radius:10px; cursor:pointer;
+    background:rgba(255,47,208,.12);
+    border:1px solid rgba(255,47,208,.4);
+    color:#ffd7f4; font-size:.95rem; transition:.25s;
+    align-items:center; justify-content:center;
+  }
+  body.is-admin .del{display:inline-flex}
+  .del:hover{background:rgba(255,47,208,.3); transform:scale(1.08)}
+
+  .post-img, .post-video{display:block; width:100%; max-height:78vh; object-fit:cover; background:#000}
+  .post-audio{display:flex; align-items:center; gap:12px; padding:14px; background:rgba(0,229,255,.05)}
+  .post-audio .ic{font-size:1.6rem; filter:drop-shadow(0 0 10px var(--neon1))}
+  .post-audio audio{flex:1; width:100%}
+  .post-text{
+    padding:18px 16px; font-size:1rem; line-height:2;
+    white-space:pre-wrap; word-break:break-word;
+    color:#eaf7ff;
+    background:linear-gradient(135deg, rgba(0,229,255,.07), rgba(168,85,247,.07));
+    border-block:1px solid rgba(0,229,255,.16);
+  }
+  .post-file{
+    display:flex; align-items:center; gap:12px; padding:16px;
+    background:rgba(0,229,255,.05);
+  }
+  .post-file .ic{font-size:1.7rem}
+  .post-file div{display:flex; flex-direction:column; min-width:0}
+  .post-file b{font-size:.82rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:42vw}
+  .post-file small{font-size:.66rem; color:#7fb6dd}
+  .post-file .dl, .post .dl{
+    margin-inline-start:auto; text-decoration:none; white-space:nowrap;
+    padding:8px 14px; border-radius:10px; font-size:.72rem;
+    color:#04121a; font-weight:700;
+    background:linear-gradient(135deg, var(--neon1), var(--neon2));
+    box-shadow:0 0 14px rgba(0,229,255,.4);
+  }
+  .post-caption{padding:12px 14px 4px; font-size:.86rem; line-height:1.9; white-space:pre-wrap; word-break:break-word}
+  .post-foot{padding:10px 14px 14px}
+  .tag{font-size:.66rem; color:var(--neon2); border:1px solid rgba(34,255,136,.35); background:rgba(34,255,136,.07); padding:3px 9px; border-radius:999px}
+
+  .empty, .muted{text-align:center; color:#6d9bc0; font-size:.8rem}
+  .empty{padding:34px 12px; border:1px dashed rgba(0,229,255,.28); border-radius:18px}
+
+  /* ================= پنل مدیریت ================= */
+  .admin-wrap{max-width:660px; margin:0 auto; padding:100px 16px 90px; display:flex; flex-direction:column; gap:20px}
+  .card{
+    border:1px solid rgba(0,229,255,.25); border-radius:22px;
+    background:linear-gradient(180deg, rgba(12,20,44,.92), rgba(6,10,24,.92));
+    box-shadow:0 10px 34px rgba(0,0,0,.5), inset 0 0 50px rgba(0,229,255,.05);
+    padding:20px;
+  }
+  .card h3{font-size:1rem; margin-bottom:4px}
+  .card h3::before{content:"◆ "; color:var(--neon2)}
+  .card .sub{font-size:.7rem; color:#7fb6dd; margin-bottom:16px; display:block}
+
+  .dropzone{
+    border:2px dashed rgba(0,229,255,.4);
+    border-radius:18px; padding:26px 16px; text-align:center;
+    cursor:pointer; transition:.3s;
+    background:rgba(0,229,255,.04);
+  }
+  .dropzone:hover, .dropzone.over{
+    border-color:var(--neon2);
+    background:rgba(34,255,136,.09);
+    box-shadow:0 0 26px rgba(34,255,136,.3);
+  }
+  .dropzone .big{font-size:2rem; display:block; margin-bottom:8px; filter:drop-shadow(0 0 12px var(--neon1))}
+  .dropzone b{font-size:.86rem}
+  .dropzone small{display:block; font-size:.66rem; color:#7fb6dd; margin-top:6px}
+
+  #chosenInfo{font-size:.7rem; color:#9fd8ff; margin:14px 0 8px}
+  .c-row{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 12px; margin-bottom:8px;
+    border:1px solid rgba(0,229,255,.2); border-radius:12px;
+    background:rgba(0,229,255,.05); font-size:.76rem;
+  }
+  .c-row .ic{font-size:1.05rem}
+  .c-row .c-name{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .c-row small{color:#7fb6dd; font-size:.64rem}
+  .c-row .rm{
+    background:rgba(255,47,208,.14); border:1px solid rgba(255,47,208,.4);
+    color:#ffd7f4; width:26px; height:26px; border-radius:8px; cursor:pointer; transition:.25s;
+  }
+  .c-row .rm:hover{background:rgba(255,47,208,.32)}
+
+  textarea.caption{
+    width:100%; min-height:96px; resize:vertical;
+    margin-top:16px; padding:13px 14px;
+    font-family:inherit; font-size:.82rem; line-height:1.9;
+    color:#eaf7ff; background:rgba(4,8,20,.75);
+    border:1px solid rgba(0,229,255,.28); border-radius:14px;
+    transition:.25s;
+  }
+  textarea.caption:focus{
+    outline:none; border-color:var(--neon1);
+    box-shadow:0 0 20px rgba(0,229,255,.25);
+  }
+
+  .row-btns{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+  .btn{
+    font-family:inherit; font-size:.8rem; font-weight:700; cursor:pointer;
+    padding:12px 18px; border-radius:14px; border:0;
+    transition:transform .25s, box-shadow .25s, opacity .25s;
+  }
+  .btn-primary{
+    color:#04121a;
+    background:linear-gradient(135deg, var(--neon1), var(--neon2));
+    box-shadow:0 0 20px rgba(0,229,255,.4);
+  }
+  .btn-ghost{
+    color:#dff2ff; background:rgba(0,229,255,.1);
+    border:1px solid rgba(0,229,255,.35);
+  }
+  .btn-danger{
+    color:#ffd7f4; background:rgba(255,47,208,.14);
+    border:1px solid rgba(255,47,208,.45);
+  }
+  .btn:hover:not(:disabled){transform:translateY(-2px)}
+  .btn:disabled{opacity:.45; cursor:not-allowed}
+
+  /* نوار پیشرفت */
+  .progress-wrap{display:none; margin-top:18px}
+  .progress-wrap.show{display:block; animation:postIn .3s ease}
+  .progress-top{display:flex; justify-content:space-between; font-size:.72rem; margin-bottom:7px; color:#9fd8ff}
+  .progress{
+    height:16px; border-radius:999px; overflow:hidden;
+    background:rgba(0,229,255,.1);
+    border:1px solid rgba(0,229,255,.28);
+  }
+  .progress i{
+    display:block; height:100%; width:0%;
+    background:linear-gradient(90deg, var(--neon1), var(--neon2), var(--neon1));
+    background-size:200% 100%;
+    box-shadow:0 0 18px var(--neon1);
+    transition:width .35s ease;
+    animation:lightRun 2.5s linear infinite;
+  }
+
+  /* لیست مدیریت */
+  #manageList{display:flex; flex-direction:column; gap:8px; margin-top:6px}
+  .m-row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:12px;
+    border:1px solid rgba(0,229,255,.16);
+    background:rgba(0,229,255,.04); font-size:.76rem;
+  }
+  .badge{
+    font-size:.62rem; padding:3px 9px; border-radius:999px; white-space:nowrap;
+    color:#04121a; font-weight:700;
+    background:linear-gradient(135deg, var(--neon1), var(--neon3));
+  }
+  .m-name{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .m-date{font-size:.62rem; color:#7fb6dd; white-space:nowrap}
+
+  /* ================= مودال ورود ================= */
+  .modal{
+    position:fixed; inset:0; z-index:80;
+    display:grid; place-items:center; padding:16px;
+    background:rgba(2,4,12,.75); backdrop-filter:blur(7px);
+    opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s;
+  }
+  .modal.show{opacity:1; visibility:visible}
+  .login-card{
+    width:min(400px, 100%);
+    border:1px solid rgba(0,229,255,.35); border-radius:22px;
+    background:linear-gradient(180deg, #0b1430, #060a18);
+    box-shadow:0 0 45px rgba(0,229,255,.28);
+    padding:24px;
+    transform:translateY(14px) scale(.97);
+    transition:transform .35s cubic-bezier(.6,.05,.2,1);
+  }
+  .modal.show .login-card{transform:translateY(0) scale(1)}
+  .login-card h3{font-size:1.05rem; margin-bottom:6px}
+  .login-card p.hint{font-size:.68rem; color:#7fb6dd; line-height:1.8; margin-bottom:18px}
+  .field{margin-bottom:14px}
+  .field label{display:block; font-size:.7rem; color:#9fd8ff; margin-bottom:6px}
+  .field input{
+    width:100%; padding:13px 14px;
+    font-family:inherit; font-size:.86rem; color:#eaf7ff;
+    background:rgba(4,8,20,.8);
+    border:1px solid rgba(0,229,255,.28); border-radius:13px;
+    transition:.25s;
+  }
+  .field input:focus{outline:none; border-color:var(--neon1); box-shadow:0 0 18px rgba(0,229,255,.28)}
+  .login-note{font-size:.7rem; color:#ff9bd8; min-height:20px; margin:2px 0 10px}
+  .shake{animation:shake .45s}
+
+  /* ================= توست ================= */
+  .toast{
+    position:fixed; bottom:18px; left:50%; z-index:95;
+    transform:translate(-50%, 24px);
+    padding:12px 20px; border-radius:14px;
+    background:#0d1830; border:1px solid rgba(0,229,255,.45);
+    box-shadow:0 10px 30px rgba(0,0,0,.6), 0 0 22px rgba(0,229,255,.25);
+    color:#eaf7ff; font-size:.8rem;
+    opacity:0; pointer-events:none; transition:.32s;
+    max-width:90vw; text-align:center;
+  }
+  .toast.show{opacity:1; transform:translate(-50%, 0)}
+
+  /* ================= انیمیشن‌ها ================= */
+  @keyframes lightRun{to{background-position:300% 0}}
+  @keyframes glowPulse{
+    0%,100%{filter:drop-shadow(0 0 10px rgba(0,229,255,.6)) drop-shadow(0 0 26px rgba(168,85,247,.45))}
+    50%    {filter:drop-shadow(0 0 22px rgba(0,229,255,.95)) drop-shadow(0 0 60px rgba(255,47,208,.6))}
+  }
+  @keyframes tabloGlow{
+    0%,100%{box-shadow:0 0 30px rgba(0,229,255,.25), inset 0 0 60px rgba(168,85,247,.18)}
+    50%    {box-shadow:0 0 60px rgba(0,229,255,.55), inset 0 0 90px rgba(255,47,208,.25)}
+  }
+  @keyframes sweepMove{
+    0%{transform:translateX(-150%) skewX(-15deg)}
+    60%,100%{transform:translateX(320%) skewX(-15deg)}
+  }
+  @keyframes dance{
+    0%,100%{transform:translateY(0) scale(1); opacity:.6}
+    50%    {transform:translateY(-14px) scale(1.35); opacity:1}
+  }
+  @keyframes flicker{
+    0%,18%,22%,25%,53%,57%,100%{opacity:1}
+    20%,24%,55%{opacity:.55}
+  }
+  @keyframes cornerPulse{0%,100%{opacity:.5; transform:scale(.9)} 50%{opacity:1; transform:scale(1.1)}}
+  @keyframes pulseDot{0%,100%{opacity:.4; transform:scale(.8)} 50%{opacity:1; transform:scale(1.2)}}
+  @keyframes stars{to{background-position:600px 600px, -800px 800px, 700px -700px, -900px -900px, 750px 750px}}
+  @keyframes postIn{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)}}
+  @keyframes shake{
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-9px)} 40%{transform:translateX(8px)}
+    60%{transform:translateX(-6px)} 80%{transform:translateX(4px)}
+  }
+
+  /* ================= ریسپانسیو ================= */
+  @media (max-width:640px){
+    .datetime{width:min(200px, 46vw); height:50px}
+    .clock{font-size:1.05rem}
+    .date{font-size:.6rem}
+    .dt-label{font-size:.56rem}
+    .tablo{padding:34px 18px 30px; border-radius:20px}
+    .corner{width:18px; height:18px}
+    .admin-chip .lbl{display:none}
+    .hero{min-height:auto; padding:92px 16px 20px}
+    .post-file b{max-width:36vw}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important}
+    .sweep{display:none}
+  }
+  </style>
+</head>
+<body>
+
+  <!-- ================= نوار بالا ================= -->
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn" aria-label="باز کردن منو" aria-expanded="false" aria-controls="drawer">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="topbar-side">
+      <!-- ساعت و تقویم (سوییچ هر ۳ ثانیه) -->
+      <div class="datetime" id="datetime" aria-live="polite">
+        <div class="dt-panel is-active" data-panel="clock">
+          <span class="clock" id="clock">--:--:--</span>
+          <span class="dt-label">ساعت به وقت ایران</span>
+        </div>
+        <div class="dt-panel" data-panel="date">
+          <span class="date" id="jDate"></span>
+          <span class="date" id="gDate"></span>
+        </div>
+        <div class="dt-dots"><i class="on"></i><i></i></div>
+      </div>
+
+      <!-- نشانگر مدیر -->
+      <div class="admin-chip">
+        <span class="dot"></span>
+        <span class="lbl">مدیر</span>
+        <button type="button" id="logoutBtn">خروج</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= منوی کشویی ================= -->
+  <nav class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-head">
+      <span>منوی اصلی</span>
+      <button class="close-btn" id="closeBtn" aria-label="بستن منو">&times;</button>
+    </div>
+
+    <ul>
+      <li><a href="#" data-go="home">صفحه اصلی</a></li>
+      <li><a href="#" data-go="messenger">پیام رسان</a></li>
+      <li><a href="#" data-go="about">درباره ی ما</a></li>
+      <li><a href="#" data-go="contact">ارتباط با ما</a></li>
+      <li><a href="#" data-role="login">ثبت نام / ورود</a></li>
+      <li><a href="#" data-go="admin">پنل مدیریت</a></li>
+    </ul>
+
+    <div class="drawer-foot">
+      <span class="dot"></span>
+      <span>آزاد اندیشان -- ایده های برتر</span>
+    </div>
+  </nav>
+
+  <div class="overlay" id="overlay"></div>
+
+  <main>
+    <!-- ================= صفحه اصلی ================= -->
+    <section id="view-home" class="view is-active">
+      <div class="hero">
+        <div class="tablo">
+          <div class="sweep"></div>
+          <div class="sweep sweep-2"></div>
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+
+          <h1 class="neon-title">آزاد اندیشان</h1>
+          <h2 class="neon-sub">( ایده های برتر )</h2>
+
+          <div class="lights">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- فید مطالب: آخرین پست بالا -->
+      <div class="feed-wrap">
+        <div class="feed-head">
+          <h3>آخرین مطالب</h3>
+          <span id="feedCount"></span>
+        </div>
+
+        <div class="feed" id="feed"></div>
+
+        <div class="empty" id="emptyFeed" hidden>
+          هنوز هیچ مطلبی منتشر نشده 🤍<br>
+          مدیر می‌تونه از «پنل مدیریت» عکس، فیلم، صدا، متن یا فایل بذاره.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= پنل مدیریت ================= -->
+    <section id="view-admin" class="view">
+      <div class="admin-wrap">
+
+        <!-- آپلود -->
+        <div class="card">
+          <h3>آپلود و انتشار</h3>
+          <span class="sub">هر فایلی بذاری، همون‌جای صفحهٔ اصلی میاد و آخرین پست، بالای همه.</span>
+
+          <label class="dropzone" id="dropZone" for="fileInput">
+            <span class="big">⬆️</span>
+            <b>فایل‌ها رو بکش و این‌جا رها کن (یا کلیک کن)</b>
+            <small>عکس • فیلم • صدا • متن • PDF و هر فایل دیگه -- چندتا با هم هم می‌شه</small>
+          </label>
+          <input type="file" id="fileInput" multiple hidden>
+
+          <div id="chosenInfo">فایلی انتخاب نشده</div>
+          <div id="chosenList"></div>
+
+          <textarea class="caption" id="postText"
+            placeholder="کپشن / متن پست… (برای فایل‌ها کپشن می‌شه، برای دکمهٔ «انتشار متن» خودِ متن می‌شه)"></textarea>
+
+          <div class="row-btns">
+            <button class="btn btn-primary" id="publishFilesBtn" disabled>📤 انتشار فایل‌ها</button>
+            <button class="btn btn-ghost" id="publishTextBtn">✍️ انتشار فقط متن</button>
+            <button class="btn btn-ghost" id="clearChosenBtn">🧹 خالی کردن لیست</button>
+          </div>
+
+          <!-- نوار پیشرفت -->
+          <div class="progress-wrap" id="progressWrap">
+            <div class="progress-top">
+              <span id="progressNote">در حال آماده‌سازی…</span>
+              <span id="progressPct">0%</span>
+            </div>
+            <div class="progress"><i id="progressBar"></i></div>
+          </div>
+        </div>
+
+        <!-- مدیریت مطالب -->
+        <div class="card">
+          <h3>مدیریت مطالب</h3>
+          <span class="sub">هر مطلب رو می‌تونی حذف کنی. تعداد: <b id="manageCount"></b></span>
+          <div id="manageList"></div>
+          <div class="row-btns">
+            <button class="btn btn-danger" id="clearAllBtn">🗑 حذف همهٔ مطالب</button>
+            <button class="btn btn-ghost" id="backHomeBtn">🏠 بازگشت به صفحه اصلی</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= مودال ورود ================= -->
+  <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <form class="login-card" id="loginForm" autocomplete="off" novalidate>
+      <h3 id="loginTitle">ورود مدیر 🔐</h3>
+      <p class="hint">نام کاربری و رمز عبور باید تایپ بشن. هیچ‌جا ذخیره نمی‌شن، پیش‌فرض هم پر نمی‌شن.</p>
+
+      <div class="field">
+        <label for="userInput">نام کاربری</label>
+        <input type="text" id="userInput" name="azd_u_1" autocomplete="off"
+               autocapitalize="off" spellcheck="false" placeholder="">
+      </div>
+
+      <div class="field">
+        <label for="passInput">رمز عبور</label>
+        <input type="password" id="passInput" name="azd_p_1" autocomplete="new-password" placeholder="">
+      </div>
+
+      <div class="login-note" id="loginNote"></div>
+
+      <div class="row-btns" style="margin-top:4px">
+        <button class="btn btn-primary" type="submit" id="loginBtn">ورود به پنل</button>
+        <button class="btn btn-ghost" type="button" id="cancelLoginBtn">انصراف</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+  /* ============================================================
+     آزاد اندیشان | ایده های برتر
+     فاز ۱ + پنل مدیریت و فید مطالب
+     ============================================================ */
+
+  /* ============ ۰) ابزارها ============ */
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  let toastTimer = null;
+  function toast(msg, ms = 2600){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+  }
+
+  function formatSize(b){
+    if(b === null || b === undefined) return '';
+    if(b < 1024) return b + ' بایت';
+    if(b < 1048576) return (b / 1024).toFixed(1) + ' کیلوبایت';
+    if(b < 1073741824) return (b / 1048576).toFixed(1) + ' مگابایت';
+    return (b / 1073741824).toFixed(2) + ' گیگابایت';
+  }
+
+  const faDate = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { dateStyle:'medium', timeStyle:'short' });
+
+  /* ============ ۱) منوی سه خط ============ */
+  const menuBtn  = $('#menuBtn');
+  const drawer   = $('#drawer');
+  const overlay  = $('#overlay');
+  const closeBtn = $('#closeBtn');
+
+  function setMenu(open){
+    drawer.classList.toggle('open', open);
+    overlay.classList.toggle('show', open);
+    menuBtn.classList.toggle('open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    drawer.setAttribute('aria-hidden', String(!open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+  menuBtn.addEventListener('click', () => setMenu(!drawer.classList.contains('open')));
+  closeBtn.addEventListener('click', () => setMenu(false));
+  overlay.addEventListener('click', () => setMenu(false));
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') setMenu(false); });
+
+  /* ============ ۲) ساعت ایران + تاریخ شمسی و میلادی ============ */
+  const TZ = 'Asia/Tehran';
+
+  const timeFmt = new Intl.DateTimeFormat('fa-IR', {
+    timeZone: TZ, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+  });
+  const jalaliFmt = new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+    timeZone: TZ, weekday:'long', day:'numeric', month:'long', year:'numeric'
+  });
+  const gregFmt = new Intl.DateTimeFormat('fa-IR-u-ca-gregory', {
+    timeZone: TZ, weekday:'long', day:'numeric', month:'long', year:'numeric'
+  });
+
+  const clockEl = $('#clock'), jDateEl = $('#jDate'), gDateEl = $('#gDate');
+
+  function tick(){
+    const now = new Date();
+    clockEl.textContent = timeFmt.format(now);
+    jDateEl.textContent = 'شمسی: ' + jalaliFmt.format(now);
+    gDateEl.textContent = 'میلادی: ' + gregFmt.format(now);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ============ ۳) سوییچ ساعت/تقویم هر ۳ ثانیه ============ */
+  const dtEl   = $('#datetime');
+  const panels = $$('.dt-panel', dtEl);
+  const dots   = $$('.dt-dots i', dtEl);
+  const SWITCH_MS = 3000;
+  let activePanel = 0;
+
+  function showPanel(index){
+    activePanel = (index + panels.length) % panels.length;
+    panels.forEach((p,i) => p.classList.toggle('is-active', i === activePanel));
+    dots.forEach((d,i)   => d.classList.toggle('on',       i === activePanel));
+  }
+  showPanel(0);
+  setInterval(() => showPanel(activePanel + 1), SWITCH_MS);
+
+  /* ============ ۴) ویوها و منو ============ */
+  function go(view){
+    $$('.view').forEach(v => v.classList.toggle('is-active', v.id === 'view-' + view));
+    setMenu(false);
+    if(view === 'home') window.scrollTo({ top:0, behavior:'smooth' });
+    if(view === 'admin') window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  $$('.drawer a').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const role = a.dataset.role;
+      const target = a.dataset.go;
+
+      if(role === 'login'){ openLogin(); return; }
+      if(target === 'home'){ go('home'); return; }
+      if(target === 'admin'){ isAdmin ? go('admin') : openLogin(); return; }
+      setMenu(false);
+      toast('این بخش تو فاز بعدی میاد 🚧 (' + a.textContent.trim() + ')');
+    });
+  });
+
+  /* ============ ۵) ورود مدیر ============ */
+  /* ⚠️ این نام کاربری و رمز فقط برای نمایشِ سمت مرورگره.
+     برای سایت واقعی باید روی سرور بررسی بشه (پایین‌تر توضیح دادم). */
+  const ADMIN_USER = 'mh.mohammad';
+  const ADMIN_PASS = 'mhmohandes0905';
+
+  let isAdmin   = false;   // فقط تو حافظه -- هیچ‌جا ذخیره نمی‌شه
+  let fails     = 0;
+  let lockUntil = 0;
+
+  const loginModal = $('#loginModal');
+  const userInput  = $('#userInput');
+  const passInput  = $('#passInput');
+  const loginNote  = $('#loginNote');
+
+  function clearLoginInputs(){
+    userInput.value = '';
+    passInput.value = '';
+  }
+
+  function openLogin(){
+    if(isAdmin){ go('admin'); return; }
+    clearLoginInputs();
+    loginNote.textContent = '';
+    loginModal.classList.add('show');
+    setTimeout(() => userInput.focus(), 260);
+  }
+
+  function closeLogin(){
+    loginModal.classList.remove('show');
+    clearLoginInputs();          // همیشه پاک می‌شه، چیزی نمی‌مونه
+    loginNote.textContent = '';
+  }
+
+  $('#cancelLoginBtn').addEventListener('click', closeLogin);
+  loginModal.addEventListener('click', e => { if(e.target === loginModal) closeLogin(); });
+
+  function lockLogin(sec){
+    lockUntil = Date.now() + sec * 1000;
+    $('#loginBtn').disabled = true;
+    const t = setInterval(() => {
+      const left = Math.ceil((lockUntil - Date.now()) / 1000);
+      if(left <= 0){
+        clearInterval(t);
+        $('#loginBtn').disabled = false;
+        loginNote.textContent = '';
+      } else {
+        loginNote.textContent = 'تلاش زیاد بود! ' + left + ' ثانیه صبر کن ⏳';
+      }
+    }, 250);
+  }
+
+  $('#loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+
+    if(Date.now() < lockUntil){ return; }
+
+    const u = userInput.value.trim();
+    const p = passInput.value;
+
+    if(!u || !p){
+      loginNote.textContent = 'نام کاربری و رمز عبور رو کامل تایپ کن.';
+      return;
+    }
+
+    if(u === ADMIN_USER && p === ADMIN_PASS){
+      isAdmin = true;
+      fails = 0;
+      document.body.classList.add('is-admin');
+      clearLoginInputs();
+      closeLogin();
+      go('admin');
+      renderFeed();
+      toast('خوش آمدی مدیر! پنل باز شد 🎛');
+      return;
+    }
+
+    fails++;
+    loginNote.textContent = 'نام کاربری یا رمز عبور اشتباهه.';
+    const form = $('#loginForm');
+    form.classList.add('shake');
+    setTimeout(() => form.classList.remove('shake'), 480);
+    clearLoginInputs();
+    userInput.focus();
+    if(fails >= 5) lockLogin(30);
+  });
+
+  $('#logoutBtn').addEventListener('click', () => {
+    isAdmin = false;
+    document.body.classList.remove('is-admin');
+    go('home');
+    renderFeed();
+    toast('از پنل خارج شدی 👋');
+  });
+
+  $('#backHomeBtn').addEventListener('click', () => go('home'));
+
+  /* ============ ۶) دیتابیس مرورگر (IndexedDB) ============ */
+  const DB_NAME = 'azadandishan_db', DB_VER = 1, STORE = 'posts';
+  let dbPromise = null;
+
+  function getDB(){
+    if(dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      if(!('indexedDB' in window)){ reject(new Error('no-idb')); return; }
+      const req = indexedDB.open(DB_NAME, DB_VER);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if(!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath:'id' });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror   = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+
+  async function idbAdd(post){
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const t = db.transaction(STORE, 'readwrite');
+      t.objectStore(STORE).put(post);
+      t.oncomplete = () => resolve(post);
+      t.onerror    = () => reject(t.error);
+      t.onabort    = () => reject(t.error || new Error('abort'));
+    });
+  }
+
+  async function idbAll(){
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const t = db.transaction(STORE, 'readonly');
+      const rq = t.objectStore(STORE).getAll();
+      rq.onsuccess = () => resolve(rq.result || []);
+      rq.onerror   = () => reject(rq.error);
+    });
+  }
+
+  async function idbDel(id){
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const t = db.transaction(STORE, 'readwrite');
+      t.objectStore(STORE).delete(id);
+      t.oncomplete = () => resolve();
+      t.onerror    = () => reject(t.error);
+    });
+  }
+
+  async function idbClear(){
+    const db = await getDB();
+    return new Promise((resolve, reject) => {
+      const t = db.transaction(STORE, 'readwrite');
+      t.objectStore(STORE).clear();
+      t.oncomplete = () => resolve();
+      t.onerror    = () => reject(t.error);
+    });
+  }
+
+  /* ============ ۷) رندر فید (آخرین پست، بالا) ============ */
+  const KIND_LABEL = { image:'عکس', video:'فیلم', audio:'صدا', text:'متن', file:'فایل' };
+
+  const feedEl     = $('#feed');
+  const emptyEl    = $('#emptyFeed');
+  const feedCountEl= $('#feedCount');
+  let feedUrls = [];
+
+  function iconFor(mime){
+    const m = (mime || '').toLowerCase();
+    if(m.startsWith('image/')) return '🖼';
+    if(m.startsWith('video/')) return '🎬';
+    if(m.startsWith('audio/')) return '🎵';
+    if(m.includes('pdf'))      return '📕';
+    if(m.includes('zip') || m.includes('rar')) return '🗜';
+    if(m.startsWith('text/'))  return '📄';
+    return '🗂';
+  }
+
+  function kindOf(mime){
+    const m = (mime || '').toLowerCase();
+    if(m.startsWith('image/')) return 'image';
+    if(m.startsWith('video/')) return 'video';
+    if(m.startsWith('audio/')) return 'audio';
+    return 'file';
+  }
+
+  function buildPostCard(p){
+    const card = document.createElement('article');
+    card.className = 'post';
+
+    /* سرکارت */
+    const head = document.createElement('header');
+    head.className = 'post-head';
+
+    const av = document.createElement('div');
+    av.className = 'avatar';
+    av.textContent = 'آ';
+
+    const who = document.createElement('div');
+    who.className = 'who';
+    const nm = document.createElement('b');
+    nm.textContent = 'آزاد اندیشان';
+    const dt = document.createElement('small');
+    dt.textContent = faDate.format(new Date(p.createdAt));
+    who.append(nm, dt);
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'del';
+    del.title = 'حذف این مطلب';
+    del.textContent = '🗑';
+    del.addEventListener('click', async () => {
+      if(!isAdmin){ toast('فقط مدیر می‌تونه حذف کنه 🔐'); return; }
+      if(!confirm('این مطلب حذف بشه؟')) return;
+      await idbDel(p.id);
+      toast('حذف شد 🗑');
+      renderFeed();
+    });
+
+    head.append(av, who, del);
+    card.append(head);
+
+    /* رسانه / متن / فایل */
+    if(p.kind === 'image' && p.blob){
+      const u = URL.createObjectURL(p.blob); feedUrls.push(u);
+      const img = document.createElement('img');
+      img.className = 'post-img'; img.loading = 'lazy';
+      img.src = u; img.alt = p.caption || 'تصویر';
+      card.append(img);
+    }
+    else if(p.kind === 'video' && p.blob){
+      const u = URL.createObjectURL(p.blob); feedUrls.push(u);
+      const v = document.createElement('video');
+      v.className = 'post-video'; v.controls = true; v.playsInline = true;
+      v.preload = 'metadata'; v.src = u;
+      card.append(v);
+    }
+    else if(p.kind === 'audio' && p.blob){
+      const u = URL.createObjectURL(p.blob); feedUrls.push(u);
+      const box = document.createElement('div'); box.className = 'post-audio';
+      const ic = document.createElement('span'); ic.className = 'ic'; ic.textContent = '🎵';
+      const a = document.createElement('audio'); a.controls = true; a.src = u;
+      box.append(ic, a);
+      card.append(box);
+    }
+    else if(p.kind === 'text'){
+      const d = document.createElement('div');
+      d.className = 'post-text';
+      d.textContent = p.text || p.caption || '';
+      card.append(d);
+    }
+    else if(p.blob){
+      const u = URL.createObjectURL(p.blob); feedUrls.push(u);
+      const box  = document.createElement('div'); box.className = 'post-file';
+      const ic   = document.createElement('span'); ic.className = 'ic';
+      ic.textContent = iconFor(p.mime);
+      const info = document.createElement('div');
+      const fn   = document.createElement('b'); fn.textContent = p.fileName || 'فایل';
+      const fs   = document.createElement('small'); fs.textContent = formatSize(p.fileSize);
+      info.append(fn, fs);
+      const dl = document.createElement('a');
+      dl.className = 'dl'; dl.href = u; dl.download = p.fileName || 'file';
+      dl.textContent = 'دانلود';
+      box.append(ic, info, dl);
+      card.append(box);
+    }
+
+    /* کپشن */
+    if(p.caption){
+      const cap = document.createElement('p');
+      cap.className = 'post-caption';
+      cap.textContent = p.caption;
+      card.append(cap);
+    }
+
+    /* فوتر */
+    const foot = document.createElement('div');
+    foot.className = 'post-foot';
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = '#' + (KIND_LABEL[p.kind] || p.kind);
+    foot.append(tag);
+    card.append(foot);
+
+    return card;
+  }
+
+  function buildManageRow(p){
+    const row = document.createElement('div');
+    row.className = 'm-row';
+
+    const badge = document.createElement('span');
+    badge.className = 'badge';
+    badge.textContent = KIND_LABEL[p.kind] || p.kind;
+
+    const name = document.createElement('span');
+    name.className = 'm-name';
+    name.textContent = (p.kind === 'text')
+      ? (p.text || '').slice(0, 42) || 'متن'
+      : (p.fileName || '--');
+
+    const date = document.createElement('small');
+    date.className = 'm-date';
+    date.textContent = faDate.format(new Date(p.createdAt));
+
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'del';
+    del.title = 'حذف';
+    del.textContent = '🗑';
+    del.addEventListener('click', async () => {
+      if(!confirm('حذف بشه؟')) return;
+      await idbDel(p.id);
+      toast('حذف شد 🗑');
+      renderFeed();
+    });
+
+    row.append(badge, name, date, del);
+    return row;
+  }
+
+  async function renderFeed(){
+    let posts = [];
+    try{
+      posts = await idbAll();
+    }catch(err){
+      console.error(err);
+      toast('ذخیره‌سازی مرورگر در دسترس نیست 🚫');
+    }
+
+    posts.sort((a, b) => b.createdAt - a.createdAt);   // آخرین پست، بالا
+
+    feedEl.innerHTML = '';                  // اول DOM پاک، بعد آدرس‌ها آزاد
+    feedUrls.forEach(u => URL.revokeObjectURL(u));
+    feedUrls = [];
+
+    feedCountEl.textContent = posts.length ? posts.length + ' مطلب' : '';
+    emptyEl.hidden = posts.length > 0;
+
+    posts.forEach(p => feedEl.append(buildPostCard(p)));
+
+    const box = $('#manageList');
+    box.innerHTML = '';
+    $('#manageCount').textContent = posts.length ? String(posts.length) : 'بدون مطلب';
+    if(!posts.length){
+      const e = document.createElement('p');
+      e.className = 'muted';
+      e.textContent = 'هنوز چیزی منتشر نشده.';
+      box.append(e);
+    }else{
+      posts.forEach(p => box.append(buildManageRow(p)));
+    }
+  }
+
+  /* ============ ۸) انتخاب فایل‌ها ============ */
+  let chosenFiles = [];
+
+  const fileInput = $('#fileInput');
+  const dropZone  = $('#dropZone');
+
+  function addFiles(files){
+    files.forEach(f => {
+      const dup = chosenFiles.some(c =>
+        c.name === f.name && c.size === f.size && c.lastModified === f.lastModified
+      );
+      if(!dup) chosenFiles.push(f);
+    });
+    updateChosen();
+    if(files.length) toast(files.length + ' فایل اضافه شد 📎');
+  }
+
+  fileInput.addEventListener('change', () => addFiles(Array.from(fileInput.files)));
+
+  ['dragenter','dragover'].forEach(ev =>
+    dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('over'); })
+  );
+  ['dragleave','drop'].forEach(ev =>
+    dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('over'); })
+  );
+  dropZone.addEventListener('drop', e => {
+    const files = Array.from(e.dataTransfer.files || []);
+    if(files.length) addFiles(files);
+  });
+
+  function updateChosen(){
+    const list = $('#chosenList');
+    list.innerHTML = '';
+
+    const total = chosenFiles.reduce((a, f) => a + f.size, 0);
+    $('#chosenInfo').textContent = chosenFiles.length
+      ? chosenFiles.length + ' فایل • مجموع ' + formatSize(total)
+      : 'فایلی انتخاب نشده';
+
+    chosenFiles.forEach((f, i) => {
+      const row = document.createElement('div');
+      row.className = 'c-row';
+
+      const ic = document.createElement('span');
+      ic.className = 'ic';
+      ic.textContent = iconFor(f.type);
+
+      const nm = document.createElement('span');
+      nm.className = 'c-name';
+      nm.textContent = f.name;
+
+      const sz = document.createElement('small');
+      sz.textContent = formatSize(f.size);
+
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'rm';
+      rm.textContent = '✕';
+      rm.title = 'حذف از لیست';
+      rm.addEventListener('click', () => {
+        chosenFiles.splice(i, 1);
+        updateChosen();
+      });
+
+      row.append(ic, nm, sz, rm);
+      list.append(row);
+    });
+
+    $('#publishFilesBtn').disabled = chosenFiles.length === 0;
+  }
+
+  $('#clearChosenBtn').addEventListener('click', () => {
+    chosenFiles = [];
+    fileInput.value = '';
+    updateChosen();
+    toast('لیست خالی شد 🧹');
+  });
+
+  /* ============ ۹) انتشار با نوار پیشرفت ============ */
+  const progressWrap = $('#progressWrap');
+  const progressBar  = $('#progressBar');
+  const progressPct  = $('#progressPct');
+  const progressNote = $('#progressNote');
+
+  function setProgress(p){
+    progressBar.style.width = p + '%';
+    progressPct.textContent = Math.round(p) + '%';
+  }
+
+  async function saveAll(posts){
+    progressWrap.classList.add('show');
+    setProgress(0);
+    progressNote.textContent = 'در حال آماده‌سازی…';
+
+    try{
+      for(let i = 0; i < posts.length; i++){
+        progressNote.textContent = 'ذخیرهٔ ' + (i + 1) + ' از ' + posts.length + ' …';
+        setProgress(((i + 0.55) / posts.length) * 100);
+        await sleep(110);
+        await idbAdd(posts[i]);
+        setProgress(((i + 1) / posts.length) * 100);
+        await sleep(90);
+      }
+
+      setProgress(100);
+      progressNote.textContent = 'انجام شد ✅';
+      await sleep(750);
+
+      progressWrap.classList.remove('show');
+      setProgress(0);
+      progressNote.textContent = '';
+
+      /* ریست فرم */
+      chosenFiles = [];
+      fileInput.value = '';
+      $('#postText').value = '';
+      updateChosen();
+
+      await renderFeed();
+      go('home');                                   // ریدایرکت به صفحه اصلی
+      setTimeout(() => {
+        feedEl.scrollIntoView({ behavior:'smooth', block:'start' });
+      }, 380);
+
+      toast('منتشر شد! مطلبت رفت بالای صفحهٔ اصلی 🚀');
+    }catch(err){
+      console.error(err);
+      progressWrap.classList.remove('show');
+      setProgress(0);
+      progressNote.textContent = '';
+      toast('ذخیره نشد! احتمالاً حجم ذخیره‌سازی مرورگر پر شده 🚫', 4200);
+    }
+  }
+
+  $('#publishFilesBtn').addEventListener('click', async () => {
+    if(!isAdmin){ toast('اول وارد پنل شو 🔐'); return; }
+    if(!chosenFiles.length){ toast('اول یه فایل انتخاب کن 📂'); return; }
+
+    const caption = $('#postText').value.trim();
+    const base    = Date.now();
+    const posts   = [];
+
+    for(let i = 0; i < chosenFiles.length; i++){
+      const f = chosenFiles[i];
+      let kind = kindOf(f.type);
+
+      /* فایل متنی کوچیک → مستقیم متنش رو نشون بده */
+      let textContent = null;
+      if((f.type || '').startsWith('text/') && f.size < 200 * 1024){
+        try{
+          textContent = (await f.text()).slice(0, 20000);
+          kind = 'text';
+        }catch(e){ /* اگر نشد، فایل معمولی می‌مونه */ }
+      }
+
+      posts.push({
+        id: 'p_' + base + '_' + i + '_' + Math.random().toString(36).slice(2, 7),
+        createdAt: base + (chosenFiles.length - i),   // ترتیب انتخاب = ترتیب نمایش
+        kind,
+        caption,
+        text: textContent,
+        fileName: f.name,
+        fileSize: f.size,
+        mime: f.type || 'application/octet-stream',
+        blob: f
+      });
+    }
+
+    await saveAll(posts);
+  });
+
+  $('#publishTextBtn').addEventListener('click', async () => {
+    if(!isAdmin){ toast('اول وارد پنل شو 🔐'); return; }
+
+    const txt = $('#postText').value.trim();
+    if(!txt){ toast('متنی برای انتشار نیست ✍️'); return; }
+
+    const now = Date.now();
+    await saveAll([{
+      id: 'p_' + now + '_t',
+      createdAt: now,
+      kind: 'text',
+      caption: '',
+      text: txt,
+      fileName: null,
+      fileSize: 0,
+      mime: 'text/plain',
+      blob: null
+    }]);
+  });
+
+  /* ============ ۱۰) حذف همه ============ */
+  $('#clearAllBtn').addEventListener('click', async () => {
+    if(!isAdmin){ toast('دسترسی نداری 🔐'); return; }
+    if(!confirm('همهٔ مطالب پاک بشن؟ این کار برگشت‌پذیر نیست!')) return;
+    await idbClear();
+    toast('همه پاک شد 🧹');
+    renderFeed();
+  });
+
+  /* ============ ۱۱) راه‌اندازی ============ */
+  updateChosen();
+  renderFeed();
+  </script>
+</body>
+</html>
